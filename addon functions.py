@@ -23,6 +23,24 @@ def mixing_matrix(graph, membership, weights=None):
             result[ms, mt] += edge[weights]
     return result
 
+def mixing_df(graph, membership, weights=None):
+    """
+    Same as mixing_matrix, but return the result in a pd.DataFrame
+    """
+    import numpy as np
+    import pandas as pd
+    k = len(np.unique(graph.vs[membership]))
+    klevels = np.unique(graph.vs[membership])
+    result = pd.DataFrame(np.matrix([[0]* k for _ in range(k)]),
+                          index=klevels, columns=klevels)
+    for edge in graph.es:
+        ms, mt = graph.vs[edge.source][membership], graph.vs[edge.target][membership]
+        if weights is None:
+            result.loc[ms, mt] += 1
+        else:
+            result.loc[ms, mt] += edge[weights]
+    return result
+
 def linmap(x, max_value, min_value):
     """
     Linear mapping of x into [min_value, max_value]
